@@ -1,11 +1,16 @@
 // Quartz 5.2.1
 // Bootswatch
-
+@use "sass:color";
+@use "sass:selector";
 
 // Variables
 
 $body-bg-image: linear-gradient(90deg, shade-color($cyan, 10%), shade-color($purple, 10%), shade-color($pink, 5%)) !default;
 $frosted-opacity: .3 !default;
+$button-opacity: .3 !default;
+$table-opacity: .65 !default;
+$alert-opacity: .65 !default;
+$card-opacity: .65 !default;
 
 :root {
   color-scheme: light;
@@ -13,10 +18,16 @@ $frosted-opacity: .3 !default;
 
 // Mixins
 
-@mixin glass($opacity: $frosted-opacity, $bg: $white) {
-  border: none;
-  box-shadow: inset 1px 1px $border-color, inset -1px -1px rgba($white, .1), $box-shadow;
-  @include frost($opacity, $bg);
+@mixin glass($opacity: $frosted-opacity, $bg: $white, $opacity2: $opacity - .1, $withShadow: true, $noBorder: true, $bg2: $bg) {
+  @if ($noBorder) {
+    border: none;
+  }
+  @if ($withShadow) {
+    box-shadow: inset 1px 1px $border-color, inset -1px -1px rgba($white, .1), $box-shadow;
+  } @else {
+    box-shadow: none;
+  }
+  @include frost($opacity, $bg, $opacity2, $bg2);
 
   a {
     color: $card-color;
@@ -27,9 +38,9 @@ $frosted-opacity: .3 !default;
   }
 }
 
-@mixin frost($opacity: $frosted-opacity, $bg: $white) {
+@mixin frost($opacity: $frosted-opacity, $bg: $white, $opacity2: $opacity - .1, $bg2: $bg) {
   background-color: transparent;
-  background-image: linear-gradient(125deg, rgba($bg, ($opacity)), rgba($bg, ($opacity - .1)) 70%);
+  background-image: linear-gradient(125deg, rgba($bg, ($opacity)), rgba($bg2, ($opacity2)) 70%);
   backdrop-filter: blur(5px);
 }
 
@@ -43,6 +54,42 @@ body {
 
 .table-secondary {
   --bs-table-hover-color: $white;
+}
+
+@each $state, $background in $theme-colors {
+  .table-tinted-#{$state} {
+    $color: color-contrast(opaque($body-bg, $background));
+    $hover-bg: mix($color, $background, percentage($table-hover-bg-factor));
+    $striped-bg: mix($color, $background, percentage($table-striped-bg-factor));
+    $active-bg: mix($color, $background, percentage($table-active-bg-factor));
+    $table-border-color: mix($color, $background, percentage($table-border-factor));
+
+    @if ($state == secondary or $state == light) {
+      $color: $gray-800;
+    }
+    --#{$prefix}table-color: #{$color};
+    --#{$prefix}table-bg: transparent; // #{$background};
+    --#{$prefix}table-border-color: transparent; // #{$table-border-color};
+    --#{$prefix}table-striped-bg: #{$striped-bg};
+    --#{$prefix}table-striped-color: #{color-contrast($striped-bg)};
+    --#{$prefix}table-active-bg: #{$active-bg};
+    --#{$prefix}table-active-color: #{color-contrast($active-bg)};
+    --#{$prefix}table-hover-bg: transparent; // #{$hover-bg};
+    --#{$prefix}table-hover-color: #{color-contrast($hover-bg)};
+
+    color: var(--#{$prefix}table-color);
+    border-color: var(--#{$prefix}table-border-color);
+    @include glass($table-opacity, $background, $table-opacity, false);
+    @at-root #{selector.unify(&, "td")}, #{selector.unify(&, "th")}, & > td, & > th, & > tr > td, & > tr > th {
+      border: none;
+    }
+    &:hover {
+      @include glass($table-opacity, $hover-bg, $table-opacity, false);
+    }
+  }
+}
+.table-tinted-active {
+  @extend .table-active;
 }
 
 // Buttons
@@ -59,6 +106,20 @@ body {
 
     &.disabled {
       color: $white;
+    }
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .btn-outline-#{$color} {
+    --#{$prefix}btn-font-weight: 600;
+    @include glass($button-opacity, $white, $button-opacity, false, false);
+    .btn-check:checked + & {
+      background-image: none;
+    }
+    text-shadow: rgba(color-contrast(mix($value, $white, 50%)), 50%) 0 0 0.25em;
+    @if ($color == secondary) {
+      --#{$prefix}btn-color: #{color.adjust($value, $alpha: 0.3)};
     }
   }
 }
@@ -180,13 +241,15 @@ body {
 // Indicators
 
 .alert {
-  @include glass();
   position: relative;
   overflow: hidden;
   color: $white;
 
   @each $color, $value in $theme-colors {
     $opacity: .7;
+    &-#{$color} {
+      @include glass($bg: $value, $bg2: $white);
+    }
     &-#{$color}::after {
       position: absolute;
       top: 0;
@@ -195,6 +258,19 @@ body {
       height: 100%;
       content: "";
       background-color: $value;
+    }
+  }
+  &.alert-tinted {
+    @each $color, $value in $theme-colors {
+      &.alert-#{$color} {
+        @include glass($alert-opacity, $value, $alert-opacity * 0.5);
+        @if ($color == secondary or $color == light) {
+          color: $gray-800;
+          .alert-link {
+            color: $gray-800;
+          }
+        }
+      }
     }
   }
 
@@ -223,18 +299,32 @@ body {
   @include glass();
 
   @each $color, $value in $theme-colors {
-    @if ($color == secondary) {
-      --bs-secondary-rgb: transparent;
-    } @else {
-      &.bg-#{$color} {
+    &.bg-#{$color} {
+      @if ($color == secondary) {
+        --bs-secondary-rgb: transparent;
+        // --bs-bg-opacity: .4;
+      } @else {
         background-image: none;
+      }
+    }
+    &.tinted-#{$color} {
+      @if ($color == secondary) {
+        --bs-secondary-rgb: transparent;
+        // --bs-bg-opacity: .4;
+      } @else {
+        @include glass($card-opacity, $value, $card-opacity * 0.5);
       }
     }
   }
 
-  &.bg-light {
+  &.bg-light, &.tinted-light {
     .card-header,
     .card-body {
+      color: $gray-800;
+    }
+  }
+  &-header, &-body {
+    &.bg-light {
       color: $gray-800;
     }
   }
@@ -280,6 +370,10 @@ body {
 
 .tooltip {
   backdrop-filter: blur(5px);
+}
+
+.modal-backdrop {
+  @include frost($modal-backdrop-filter-opacity, $modal-backdrop-bg, $modal-backdrop-filter-opacity, $modal-backdrop-bg);
 }
 
 .modal-content {

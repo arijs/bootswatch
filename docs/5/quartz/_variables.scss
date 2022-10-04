@@ -24,6 +24,7 @@ $indigo:  #6610f2 !default;
 $purple:  #686dc3 !default;
 $pink:    #e83283 !default;
 $red:     #fc346f !default;
+$copper:  #fc4b34 !default;
 $orange:  #fd7e14 !default;
 $yellow:  #ffc107 !default;
 $green:   #41d7a7 !default;
@@ -32,10 +33,12 @@ $cyan:    #39cbfb !default;
 
 $primary:       $pink !default;
 $secondary:     rgba($white, .4) !default;
+// $secondary:     $indigo !default;
+// $secondary:     mix($white, $pink, 50%) !default;
 $success:       $green !default;
 $info:          $cyan !default;
 $warning:       $yellow !default;
-$danger:        $orange !default;
+$danger:        $copper !default;
 $light:         $gray-200 !default;
 $dark:          $gray-900 !default;
 
@@ -43,11 +46,11 @@ $min-contrast-ratio:   1.5 !default;
 
 // Spacing
 
-$spacer: 2rem !default;
+$spacer: 1rem !default;
 
 // Body
 
-$body-bg:                   $purple !default;
+$body-bg:                   $gray-600 !default;
 $body-color:                $white !default;
 
 // Links
@@ -79,6 +82,7 @@ $blockquote-footer-color:     $text-muted !default;
 $table-dark-bg:               $dark !default;
 $table-dark-border-color:     darken($dark, 5%) !default;
 
+$table-hover-bg-factor:       .25 !default;
 $table-bg-scale:              0 !default;
 
 // Buttons + Forms
@@ -89,6 +93,19 @@ $input-btn-padding-x:         1.5rem !default;
 // Buttons
 
 $btn-box-shadow:              $box-shadow !default;
+
+$btn-padding-y:               0.5em;
+$btn-padding-x:               0.75em;
+$btn-font-size:               1em;
+$btn-border-radius:           0.25em;
+$btn-padding-y-lg:            0.5em;
+$btn-padding-x-lg:            0.75em;
+$btn-font-size-lg:            1.25em;
+$btn-border-radius-lg:        0.25em;
+$btn-padding-y-sm:            0.375em;
+$btn-padding-x-sm:            0.625em;
+$btn-font-size-sm:            0.8125em;
+$btn-border-radius-sm:        0.25em;
 
 // Forms
 
@@ -166,8 +183,8 @@ $pagination-disabled-bg:            $pagination-bg !default;
 
 // Cards
 
-$card-spacer-y:                     1.75rem !default;
-$card-spacer-x:                     2rem !default;
+$card-spacer-y:                     1.25rem !default;
+$card-spacer-x:                     1.5rem !default;
 $card-border-color:                 $border-color !default;
 $card-cap-bg:                       transparent !default;
 $card-cap-color:                    $white !default;
@@ -179,6 +196,11 @@ $card-bg:                           transparent !default;
 $accordion-button-bg:                     $secondary !default;
 $accordion-button-active-bg:              $primary !default;
 $accordion-button-active-color:           $white !default;
+
+// Modal
+
+$modal-backdrop-opacity: 1;
+$modal-backdrop-filter-opacity: .625;
 
 // Tooltips
 
@@ -200,6 +222,10 @@ $popover-arrow-outer-color:         transparent !default;
 $toast-header-color:                $card-color !default;
 $toast-header-background-color:     $card-cap-bg !default;
 $toast-header-border-color:         $border-color !default;
+
+// Alerts
+
+$alert-padding-x:                   1.75rem !default;
 
 // Progress bars
 
